@@ -1,0 +1,45 @@
+% A task to learn clustering using MATLAB tools and plotting my results on graphs to illustrate the clusters using different methods.
+%use iris data set
+clc
+iris =csvread('iris.csv');
+iris_real =csvread('iris_real.csv');
+addpath('WK.m');
+
+%task 1 K-means clustering 
+km_iris=kmeans(iris,3)
+wkappa_k = WK(km_iris',iris_real)
+%task 3 plot clusters, plot km-iris in scatter graph
+
+figure('name','K-means scatter graph');
+gscatter(iris (:,1),iris (:,2),km_iris);
+
+%task 2 Hierarchical methods 
+distances = pdist(iris);
+z=linkage(distances, 'average') ; 
+hierarch_Iris = cluster(z,'maxclust',3) 
+
+z_single=linkage(distances, 'Single') ; 
+hierarch_Iris_single = cluster(z_single,'maxclust',3)
+
+z_complete=linkage(distances, 'Complete') ; 
+hierarch_Iris_complete = cluster(z_complete,'maxclust',3)
+
+wkappa_H = WK(hierarch_Iris',iris_real)
+wkappa_H_single = WK(hierarch_Iris_single',iris_real)
+wkappa_H_complete = WK(hierarch_Iris_complete',iris_real)
+
+%task 3 plot clusters
+figure('name','hierarch scatter graph');
+gscatter(iris (:,1),iris (:,2),hierarch_Iris);
+
+%task 4 dendrograms 
+figure('name','Dendrogram of hierarchical clustering')
+[H, T] = dendrogram(z);
+
+%task 5 
+figure('name','Weighted Kappa Graphs')
+%x= catergorical({'wkappa H','wkappa_k'});
+y = [wkappa_H, wkappa_k, wkappa_H_single, wkappa_H_complete];
+bar(y, 'w', 'EdgeColor',[0 .2 .7], 'LineWidth',1) 
+newXticklabel = {'wkappa H','wkappa K','wkappa_H_single', 'wkappa_H_comeplete'};
+set(gca,'XtickLabel',newXticklabel);
